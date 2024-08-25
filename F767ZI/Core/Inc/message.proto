@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+message ServoUltrasonicData {
+  float position_1 = 1;  // Position of the servo motor 1 in degrees
+  float position_2 = 2;        // Position of the servo motor 2 in degrees
+  float distance = 3;         // Distance measured by the ultrasonic sensor
+}
+
+message Status {
+  bool lock_motors = 1;  // Lock motors in place
+  bool fire_laser = 2;            // Fire laser
+  bool motor_mode = 3;  // True for scanning and False for manual
+}
+
+message CombinedData {
+  ServoUltrasonicData servo_data = 1;  // Embedded Servo and Ultrasonic Data
+  Status status = 2;                   // Embedded Status Data
+}

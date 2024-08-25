@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      /* Styles remain the same */
+      body {
+        display: flex;
+        justify-content: center; /* Center content horizontally */
+        margin: 0;
+        background-color: #f0f0f0;
+        font-family: Arial, sans-serif;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+        text-align: center; /* Center text */
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 600px; /* Optional: to limit the max width */
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px; /* Space between buttons */
+        width: 100%; /* Make the button container full width */
+      }
+
+      .button {
+        border: none;
+        color: white;
+        padding: 16px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        transition-duration: 0.4s;
+        cursor: pointer;
+        flex: 1; /* Make buttons evenly distribute across the container */
+      }
+
+      .button1,
+      .button2,
+      .button3 {
+        background-color: white;
+        color: black;
+      }
+
+      .button1 {
+        border: 2px solid #ff0015;
+      }
+
+      .button1.active,
+      .button1:hover {
+        background-color: #ff0015;
+        color: white;
+      }
+
+      .button2 {
+        border: 2px solid #008cba;
+      }
+
+      .button2.active,
+      .button2:hover {
+        background-color: #008cba;
+        color: white;
+      }
+
+      .button3 {
+        border: 2px solid #a7b54a;
+      }
+
+      .button3.active,
+      .button3:hover {
+        background-color: #a7b54a;
+        color: white;
+      }
+
+      .status {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        width: 100%;
+        box-sizing: border-box; /* Include padding in the width */
+        text-align: center;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Laser Turret Control</h1>
+
+      <div class="button-container">
+        <button
+          class="button button1"
+          id="laser-btn"
+          onclick="toggleActive('laser')"
+        >
+          Fire Laser
+        </button>
+        <button
+          class="button button2"
+          id="motor-btn"
+          onclick="toggleActive('motor')"
+        >
+          Lock Motor
+        </button>
+        <button
+          class="button button3"
+          id="mode-btn"
+          onclick="toggleActive('mode')"
+        >
+          Change Mode
+        </button>
+      </div>
+
+      <div class="status">
+        <p>Laser Status: <span id="laser-status">Off</span></p>
+        <p>Motor Angle: <span id="motor-angle">0°</span></p>
+        <p>Current Mode: <span id="current-mode">Manual</span></p>
+      </div>
+    </div>
+
+    <script>
+      function toggleActive(controlType) {
+        // Send the toggle action to the STM32 via HTTP request
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", `/${controlType}/toggle`, true);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            const status = JSON.parse(xhr.responseText);
+            updateButtonStates(status);
+          }
+        };
+        xhr.send();
+      }
+
+      function updateButtonStates(status) {
+        // Update button states based on the status from STM32
+        const laserBtn = document.getElementById("laser-btn");
+        const motorBtn = document.getElementById("motor-btn");
+        const modeBtn = document.getElementById("mode-btn");
+
+        laserBtn.classList.toggle("active", status.laser === "On");
+        motorBtn.classList.toggle("active", status.motor_locked === "Locked");
+        modeBtn.classList.toggle("active", status.mode === "Automatic");
+
+        // Update status elements
+        document.getElementById("laser-status").textContent = status.laser;
+        document.getElementById("motor-angle").textContent =
+          status.motor_angle + "°";
+        document.getElementById("current-mode").textContent = status.mode;
+      }
+
+      function updateStatus() {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "/status", true);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            const status = JSON.parse(xhr.responseText);
+            updateButtonStates(status);
+          }
+        };
+        xhr.send();
+      }
+
+      // Fetch initial status when the page loads
+      window.onload = updateStatus;
+
+      // Update status every second
+      setInterval(updateStatus, 1000);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+12:34:27 **** Incremental Build of configuration Debug for project F446RE_1st ****
+make -j7 all 
+arm-none-eabi-size   F446RE_1st.elf 
+   text	   data	    bss	    dec	    hex	filename
+  52984	    164	  18924	  72072	  11988	F446RE_1st.elf
+Finished building: default.size.stdout
+ 
+
+12:34:28 Build Finished. 0 errors, 0 warnings. (took 1s.640ms)
+

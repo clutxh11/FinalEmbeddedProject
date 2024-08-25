@@ -1,0 +1,10 @@
+12:35:23 **** Incremental Build of configuration Debug for project F767ZI ****
+make -j7 all 
+arm-none-eabi-size   F767ZI.elf 
+   text	   data	    bss	    dec	    hex	filename
+ 170412	    844	  71852	 243108	  3b5a4	F767ZI.elf
+Finished building: default.size.stdout
+ 
+
+12:35:24 Build Finished. 0 errors, 0 warnings. (took 1s.184ms)
+
